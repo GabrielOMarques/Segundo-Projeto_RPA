@@ -1,0 +1,137 @@
+import datetime
+from datetime import datetime
+import pyautogui as pa
+import pyperclip
+
+def relatorio_email(titulo,mensagem):
+    email.send_email(sender='quemenvia@hotmail.com.br', to='quemrecebe@hotmail.com.br',
+                    subject=titulo,
+                    smtp_user='quemenvia@hotmail.com.br', smtp_password='123456',
+                    smtp_server='smtp.zoho.com',smtp_port=465,
+                    tls=False,text=mensagem)
+
+# 1 - entrar no site https://console.marvin.run
+chrome.open("https://console.marvin.run")
+console.log('Consegui acessar o console.')
+
+chrome.wait_load($browser)
+timer.wait_for(2)
+
+
+# espera a pagina carregar
+screen.wait_image('tela_login.png')
+
+
+# 2 - realizar o login
+timer.wait_for(2)
+mouse.click_image('endereço_email.png')
+timer.wait_for(2)
+keyboard.type_text('usuario')
+timer.wait_for(2)
+mouse.click_image('senha.png')
+timer.wait_for(2)
+keyboard.type_text('senha')
+timer.wait_for(2)
+mouse.click_image('botao_login.png')
+console.log('Conta acessada com sucesso!')
+
+# Espera carregar totalmente a página
+timer.wait_for(2)
+screen.wait_image('horas_trabalhadas.png')
+
+# 3 - entrar na aba de executions
+mouse.click_image('execucoes.png')
+
+# Espera carregar totalmente a aba "execuções"
+screen.wait_image('processo.png')
+
+# Se aparecer a opção de "Traduzir Página", ele clicar no "X" para não atrapalhar o fluxo do script
+try:
+    scren.wait_image('x.png')
+    mouse.click_image('x.png')
+
+except:
+    pass
+
+# 4 - mudar a aba "marvin support" para o nome do "Cliente"
+timer.wait_for(2)
+mouse.click_image('marvin_support.png')
+timer.wait_for(2)
+mouse.click_image('Cliente_support.png')
+console.log('Suporte mudado para "Cliente"')
+
+# Espera carregar totalmente a aba "execuções"
+screen.wait_image('processo.png')
+timer.wait_for(2)
+
+# Pegando a data de hoje
+hoje = datetime.now().strftime('%d')
+ontem = int(hoje) - 1
+
+contagem_falhas = (len("status falha.png"))
+
+# Declarando as variáveis que vai guardar as mensagens de erro.
+mensagens_erro = []
+
+#loop para clicar em detalhes
+for i in range(contagem_falhas):
+    int(contagem_falhas)
+    try:
+        # Abre o calendario para filtrar a data
+        mouse.click_image('data.png')
+        timer.wait_for(3)
+        mouse.click($x+50)
+        timer.wait_for(5)
+        mouse.click_image(f'{ontem}.png')
+        console.log(f'Consegui clicar no calendário e filtrar pelo dia anterior! dia {ontem}.')
+        timer.wait_for(3)
+        mouse.click_image('status.png')
+        timer.wait_for(3)
+        mouse.click_image('fail.png')
+        timer.wait_for(3)
+        chrome.click_element($browser, selector=f"#root > div > div.main-content.css-8atqhb > div > div > div.css-0 > div.css-1lj77bf > div > div.css-dgk75m > input:nth-child(1)")
+        timer.wait_for(1)
+        keyboard.type_text("Cliente")
+        timer.wait_for(2)
+        mouse.click_image('buscar.png')
+        console.log('Pronto! Filtrei o status para mostrar apenas os que deu fail.')
+        timer.wait_for(2)
+
+        # Espera carregar totalmente a aba "execuções"
+        screen.wait_image('processo.png')
+        console.log('Consegui filtrar corretamente!')
+
+        # 6 - filtra os que deu fail e os que deu sucess
+        chrome.click_element($browser, selector=f"#root > div > div.main-content.css-8atqhb > div > div > div.css-0 > table > tbody > tr:nth-child({i + 1}) > td:nth-child(8) > div > a > button")
+        timer.wait_for(3)
+        keyboard.hotkey('ctrl','f')
+        keyboard.type_text('Unhandled')
+        mouse.click_image('Unhandled.png')
+        # Obs: se clicar 3x na mensagem de erro, ele seleciona a mensagem inteira para ser copiada.
+        mouse.click(clicks =3)
+        timer.wait_for(2)
+        pa.hotkey('ctrl', 'c')
+        mouse.click_image('seta_voltar.png')
+        timer.wait_for(2)
+        erro = pyperclip.paste()
+        mensagens_erro.append(erro)
+    except:
+        console.log(f'Obtemos o total de {i+1} scripts com erro')
+        break
+
+
+# formatando as mensagens de erro para mostrarem separadas na hora de mandar o email
+linhas_erros = "\n".join(mensagens_erro)
+
+# 8 - caso tenha dado tudo sucesso, enviar um email formalizando que rodou tudo normalmente
+if contagem_falhas > 0:
+    relatorio_email(f'Total de {i} erros no script "Cliente" no dia {ontem}. Segue os logs de erros', f'{linhas_erros}')
+else:
+    relatorio_email(f'Os scripts rodaram perfeitamente!', f'Tivemos o total de {i} erros no script "Cliente".')
+  
+
+# Fim do programa
+chrome.close($browser)
+console.log('O script rodou perfeitamente!')
+console.log('Fechando o chrome')
+console.log('Fim do programa.')

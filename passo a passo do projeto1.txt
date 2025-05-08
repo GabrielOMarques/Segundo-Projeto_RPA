@@ -1,0 +1,7 @@
+1 - entrar no site https://console.marvin.run/dashboard
+2 - realizar o login
+3 - entrar na aba de executions
+4 - filtra pelo nome do cliente e filtrar pela data do dia anterior
+5 - filtra os que deu fail e os que deu sucess
+6 - printa os que deu fail, pesquisa o log de erro e encaminha tudo por email para alguem
+7 - caso tenha dado tudo sucesso, enviar um email formalizando que rodou tudo normalmente
